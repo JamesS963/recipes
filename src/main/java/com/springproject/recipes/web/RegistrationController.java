@@ -37,6 +37,6 @@ public class RegistrationController {
 		userDetailSercvice.createUser(form.toUser(passwordEncoder));
 
 		return "redirect:/login";
-	}
+	} 
 
 }

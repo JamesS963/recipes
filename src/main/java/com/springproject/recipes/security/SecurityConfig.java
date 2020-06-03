@@ -18,12 +18,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private UserDetailsService userDetailsService;
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.formLogin().loginPage("/login");
-		http.formLogin().defaultSuccessUrl("/");
-	}
-
 	@Bean
 	public PasswordEncoder encoder() {
 		return new BCryptPasswordEncoder();
@@ -33,6 +27,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
 		auth.userDetailsService(userDetailsService).passwordEncoder(encoder());
+
+	}
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+
+		http.authorizeRequests().antMatchers("/recipe").hasRole("USER");
+		http.authorizeRequests().antMatchers("/", "/register").permitAll();
+		http.formLogin().loginPage("/login");
 
 	}
 

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Create Recipe</title>
+</head>
+<body>
+
+	<h1>Create Recipe</h1>
+	<form method="post" th:action="@{/recipe}" th:object="${recipe}">
+	
+		<label for="recipeName">Recipe Name: </label> 
+		<input type="text" th:field="*{title}" name="recipeName"> 
+		<span th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+		
+		<label for="description">description</label> 
+		<input type="text" th:field="*{description}" name="description">
+		<span th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+
+		<div id="ingredients">
+			<h3>Ingredients</h3>
+
+			<div th:each="ingredient, iterator : *{ingredients}">
+				
+				<label for="ingredient">ingredient</label> 
+				<input class="ingredient" type="text" th:value="${ingredient.name}" th:name="ingredients[__${iterator.index}__].name">
+				<span class="error" th:if="${#fields.hasErrors('ingredients[__${iterator.index}__].name')}" th:errors="*{ingredients[__${iterator.index}__].name} "></span>
+					
+				<label for="amount">amount</label>
+				<input type="text" th:value="${ingredient.amount}" th:name="ingredients[__${iterator.index}__].amount" >
+				<span class="error" th:if="${#fields.hasErrors('ingredients[__${iterator.index}__].amount')}" th:errors="*{ingredients[__${iterator.index}__].amount} "></span>
+				
+			</div>
+
+		</div>
+		<p id="addIngredient">add ingredient</p>
+
+
+		<div id="instructions">
+			<h3>Instructions</h3>
+			<div th:each="instruction, iterator : *{instructions}">
+		<label for="instruction" th:text="${iterator.index+1}+."> 
+		</label> <input type="text"class="instruction" th:value="${instruction.instruction}"   th:name="instructions[+${iterator.index}+].instruction">
+					<span class="error" th:if="${#fields.hasErrors('instructions[__${iterator.index}__].instruction')}" th:errors="*{instructions[__${iterator.index}__].instruction} "></span>
+
+			</div>
+		</div>
+
+		<p id="addInstruction">new instruction</p>
+
+		<button type="submit">Create Recipe</button>
+
+	</form>
+
+	<script type="text/javascript" th:src="@{javascript/createRecipe.js}"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<title>Home</title>
+</head>
+
+<body>
+	<div th:insert="fragments/nav"></div>
+	<h1>Welcome</h1>
+	<div th:each="recipe: ${recipes}">
+		<h3 th:text="${recipe.title}"></h3>
+		<p th:text="${recipe.description}">
+	</div>
+</body>
+
+</html>
