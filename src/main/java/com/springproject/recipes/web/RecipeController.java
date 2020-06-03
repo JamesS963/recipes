@@ -2,6 +2,7 @@ package com.springproject.recipes.web;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -10,7 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,15 +35,14 @@ public class RecipeController {
 	@GetMapping
 	public ModelAndView getCreateRecipe() {
 		Recipe recipe = new Recipe();
-		List<Ingredient> ingredients=new ArrayList<Ingredient>();
+		List<Ingredient> ingredients = new ArrayList<Ingredient>();
 		ingredients.add(new Ingredient());
-		
-		
+
 		List<Instruction> instructions = new ArrayList<Instruction>();
 		instructions.add(new Instruction());
 		recipe.setIngredients(ingredients);
 		recipe.setInstructions(instructions);
-		
+
 		return new ModelAndView("createRecipe", "recipe", recipe);
 	}
 
@@ -50,10 +50,10 @@ public class RecipeController {
 	public ModelAndView postCreateRecipe(@Valid Recipe recipe, Errors errors, @AuthenticationPrincipal User user)
 			throws Exception {
 
-		if(errors.hasErrors()) {
+		if (errors.hasErrors()) {
 			return new ModelAndView("createRecipe");
 		}
-		
+
 		recipe.setAuthor(user);
 
 		log.info("at controller");
@@ -65,4 +65,16 @@ public class RecipeController {
 				"recipe " + recipe.getTitle() + " has been created.");
 	}
 
+	@GetMapping("/{recipeID}")
+	public ModelAndView getRecipe(@PathVariable(value = "recipeID") Long id) {
+
+		Optional<Recipe> recipe = recipeService.get(id);
+
+		if (recipe.isEmpty()) {
+			return new ModelAndView("recipeNotFound");
+		}
+
+		return new ModelAndView("recipe", "recipe", recipe.get());
+
+	}
 }

@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(RecipeController.class)
@@ -38,48 +38,63 @@ public class RecipeControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
-	
+
 	@MockBean
 	private RecipeRepository recipeRepository;
-	
+
 	@MockBean
 	private UserRepository userRepository;
-	
+
 	@MockBean
 	private RecipeService recipeService;
-	
+
 	Recipe recipe;
-	
+
 	@Before
 	public void setup() {
 		when(userRepository.findByUsername("testUser")).thenReturn(new User("TestUser", "testPassword"));
 		recipe = new Recipe();
-		List<Ingredient> ingredients=new ArrayList<Ingredient>();
+		List<Ingredient> ingredients = new ArrayList<Ingredient>();
 		ingredients.add(new Ingredient());
-		
-		
+
 		List<Instruction> instructions = new ArrayList<Instruction>();
 		instructions.add(new Instruction());
 		recipe.setIngredients(ingredients);
 		recipe.setInstructions(instructions);
 	}
-	
+
 	@Test
-	@WithMockUser(username="testUser",password="testPassword")
+	@WithMockUser(username = "testUser", password = "testPassword")
 	public void testDisplayCreateRecipeForm() throws Exception {
-		
-		
-		mockMvc.perform(get("/recipe")).andExpect(status().isOk()).andExpect(view().name("createRecipe")).andExpect(model().attribute("recipe", recipe));
+
+		mockMvc.perform(get("/recipe")).andExpect(status().isOk()).andExpect(view().name("createRecipe"))
+				.andExpect(model().attribute("recipe", recipe));
 	}
-	
-	
+
 	@Test
-	@WithMockUser(username="testUser",password="testPassword")
-	public void testPostCreateRecipeFormWithInValidData() throws Exception{
-		
+	@WithMockUser(username = "testUser", password = "testPassword")
+	public void testPostCreateRecipeFormWithInValidData() throws Exception {
+
 		mockMvc.perform(post("/recipe").flashAttr("recipe", recipe).with(csrf())
-				.contentType(MediaType.APPLICATION_FORM_URLENCODED))
-		.andExpect(status().is2xxSuccessful());
-	
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)).andExpect(status().is2xxSuccessful());
+
+	}
+
+	@Test
+	@WithMockUser(username = "testUser", password = "testPassword")
+	public void testGetRecipeMethodReturnsExistingRecipe() throws Exception {
+		recipe.setId(1L);
+		recipe.setAuthor(new User());
+		when(recipeService.get(1L)).thenReturn(Optional.of(recipe));
+
+		mockMvc.perform(get("/recipe/1")).andExpect(status().isOk()).andExpect(view().name("recipe"))
+				.andExpect(model().attribute("recipe", recipe));
+	}
+
+	@Test
+	public void testGetRecipeMethodReturnsRecipeNotFoundPage() throws Exception {
+		when(recipeService.get(1l)).thenReturn(Optional.empty());
+
+		mockMvc.perform(get("/recipe/1")).andExpect(status().isOk()).andExpect(view().name("recipeNotFound"));
 	}
 }

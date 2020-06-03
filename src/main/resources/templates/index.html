@@ -10,7 +10,7 @@
 	<div th:insert="fragments/nav"></div>
 	<h1>Welcome</h1>
 	<div th:each="recipe: ${recipes}">
-		<h3 th:text="${recipe.title}"></h3>
+		<a th:href="@{/recipe/__${recipe.id}__}"><h3 th:text="${recipe.title}"></h3></a>
 		<p th:text="${recipe.description}">
 	</div>
 </body>
