@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<title th:text="${user.username}"></title>
+</head>
+<body>
+	<h1 th:text="${user.username}"></h1>
+
+	<div th:each="recipe: ${recipes}">
+
+		<a th:href="@{/recipe/__${recipe.id}__}"><h3 th:text="${recipe.title}"></h3></a>
+		<p th:text="${recipe.description}"></p>
+	</div>
+
+</body>
+</html>

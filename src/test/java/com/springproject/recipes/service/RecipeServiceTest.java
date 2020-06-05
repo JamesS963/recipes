@@ -18,7 +18,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.springproject.recipes.data.RecipeRepository;
+import com.springproject.recipes.data.UserRepository;
 import com.springproject.recipes.model.Recipe;
+import com.springproject.recipes.model.User;
 
 @RunWith(SpringRunner.class)
 public class RecipeServiceTest {
@@ -29,8 +31,22 @@ public class RecipeServiceTest {
 	@Mock
 	RecipeRepository recipeRepo;
 
+	@Mock
+	UserRepository userRepo;
+
+	List<Recipe> recipes;
+
 	@Before
 	public void init() {
+		recipes = new ArrayList<Recipe>();
+		Recipe recipeOne = new Recipe();
+		Recipe recipeTwo = new Recipe();
+		Recipe recipeThree = new Recipe();
+
+		recipes.add(recipeOne);
+		recipes.add(recipeTwo);
+		recipes.add(recipeThree);
+
 		MockitoAnnotations.initMocks(this);
 	}
 
@@ -47,14 +63,6 @@ public class RecipeServiceTest {
 
 	@Test
 	public void testAllRecipesAreReturnedWhenGetAllIsCalled() throws Exception {
-		List<Recipe> recipes = new ArrayList<Recipe>();
-		Recipe recipeOne = new Recipe();
-		Recipe recipeTwo = new Recipe();
-		Recipe recipeThree = new Recipe();
-
-		recipes.add(recipeOne);
-		recipes.add(recipeTwo);
-		recipes.add(recipeThree);
 
 		when(recipeRepo.findAll()).thenReturn(recipes);
 
@@ -74,6 +82,22 @@ public class RecipeServiceTest {
 	@Test
 	public void testRecipeOptionalIsEmptyWhenRecipeIsCalledThatDoesNotExist() throws Exception {
 		assertTrue(recipeService.get(1l).isEmpty());
+	}
+
+	@Test(expected = Exception.class)
+	public void testExceptionIsThrownWhenGetByUserIsCalledWithNoUserFound() throws Exception {
+		recipeService.findByAuthor(1l);
+	}
+
+	@Test
+	public void TestUsersRecipesAreReturnedWhenFindByAuthorIsCalled() throws Exception {
+		User user = new User("User", "password");
+		user.setId(1l);
+
+		when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+		when(recipeRepo.findByAuthor(user)).thenReturn(recipes);
+
+		assertEquals(3, recipeService.findByAuthor(1L).size());
 	}
 
 }

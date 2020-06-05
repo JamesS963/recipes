@@ -1,5 +1,7 @@
 package com.springproject.recipes.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -36,6 +38,10 @@ public class UserDetailServiceImpl implements UserDetailsService {
 		}
 
 		return userRepo.save(user);
+	}
+	
+	public Optional<User> loadById(Long id) {
+		return userRepo.findById(id);
 	}
 
 }

@@ -9,4 +9,5 @@ public interface RecipeService {
 	public Recipe createRecipe(Recipe recipe) throws Exception;
 	public List<Recipe> getAll();
 	public Optional<Recipe> get(Long id);
+	public List<Recipe> findByAuthor(Long id) throws Exception;
 }
